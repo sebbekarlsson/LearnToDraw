@@ -14,13 +14,15 @@ import ltd.utils.ImageGrabber;
 public class LTD {
 
 	static Random random = new Random();
+	public static int WIDTH = 1900;
+	public static int HEIGHT = 1080;
 
 	public static void main(String[] args) throws IOException{
 		ImageGrabber grabber = new ImageGrabber();
 
-		//Shape faceshape = new Shape("face");
 
-		BufferedImage img = new BufferedImage(640, 480,BufferedImage.TYPE_INT_RGB);
+
+		BufferedImage img = new BufferedImage(WIDTH, HEIGHT,BufferedImage.TYPE_INT_RGB);
 
 		File[] listOfFiles = new File("images/faces").listFiles();
 
@@ -28,29 +30,33 @@ public class LTD {
 
 		for(int i = 0; i < listOfFiles.length; i++){
 			System.out.println("Reading from: "+listOfFiles[i].getName());
-			int[][] pixels = grabber.grabPixelColors(listOfFiles[i].getAbsolutePath(), 640, 480);
+			if(listOfFiles[i].getName().endsWith("g")){
+				int[][] pixels = grabber.grabPixelColors(listOfFiles[i].getAbsolutePath(), WIDTH, HEIGHT);
 
-			rgb_data.add(pixels);
+				rgb_data.add(pixels);
+			}
 
 		}
-
-		boolean asp = false;
 
 		for(int i = 0; i < rgb_data.size(); i++){
 
 			for(int x = 0; x < img.getWidth(); x++){
 				for(int y = 0; y < img.getHeight(); y++){
 					Color color = new Color(255);
-					if(!asp){
+
+
+
+					if(random.nextInt(2) == 0){
 						color = getMediumColor(x, y, rgb_data);
 					}else{
 						color = getMedium(x, y, rgb_data);
 
 					}
 
-				
+
+
 					img.setRGB(x, y, color.getRGB());
-					
+
 
 				}
 			}
@@ -74,20 +80,23 @@ public class LTD {
 		int m_r = 0;
 		int m_g = 0;
 		int m_b = 0;
+
 		for(int i = 0; i < arrays.size(); i++){
 			int rgb = arrays.get(i)[x][y];
 			colors.add(new Color(rgb));
 		}
+
 		for(int i = 0; i < colors.size(); i++){
 			int r = colors.get(i).getRed();
-			m_r += r;
 			int g = colors.get(i).getGreen();
-			m_g += g;
 			int b = colors.get(i).getBlue();
+
+			m_r += r;
+			m_g += g;
 			m_b += b;
 
 		}
 
-		return new Color((m_r/colors.size()), (m_g/colors.size()), (m_b/colors.size()));
+		return new Color((m_r/arrays.size()), (m_g/arrays.size()), (m_b/arrays.size()));
 	}
 }
